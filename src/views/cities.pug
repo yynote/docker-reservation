@@ -1,0 +1,78 @@
+extends layout.pug
+
+block head
+  link(rel="stylesheet", href="/cities.css")
+
+block content
+  h2 Cities
+  select(id="sort-order")
+    option(value="asc") Ascending
+    option(value="desc") Descending
+  table
+    thead
+      th ID
+      th.text-center Country
+      th City
+      th Population
+    tbody
+      each row, i in rows
+        tr
+          td.fit
+            a(href=`/cities/${i + 1}`) #{i + 1}
+          td.fit #{row.CountryCode}
+          td #{row.Name}
+          - const population = new Intl.NumberFormat().format(row.Population);
+          td.fit.number #{population}
+
+script 
+  var countries = #{rows};
+  var sortOrderSelect = document.getElementById("sort-order");
+
+  function sortByPopulation() {
+    var sortedCountries;
+
+    if (sortOrderSelect.value === "asc") {
+      sortedCountries = countries.sort(function(a, b) {
+        return a.Population - b.Population;
+      });
+    } else {
+      sortedCountries = countries.sort(function(a, b) {
+        return b.Population - a.Population;
+      });
+    }
+
+    renderTable(sortedCountries);
+  }
+
+  function renderTable(rows) {
+    var tableBody = document.getElementsByTagName('tbody')[0];
+
+    tableBody.innerHTML = '';
+
+    rows.forEach(function(row, index) {
+      var tr = document.createElement('tr');
+      var tdId = document.createElement('td');
+      var tdCountryCode = document.createElement('td');
+      var tdCountryName = document.createElement('td');
+      var tdPopulation = document.createElement('td');
+
+      var tdId = index;
+      var tdCountryCode = row.CountryCode;
+      var tdCountryName = row.Name;
+      tdPopulation.textContent = row.Population;
+
+      tr.appendChild(tdId);
+      tr.appendChild(tdCountryCode);
+      tr.appendChild(tdCountryName);
+      tr.appendChild(tdPopulation);
+
+      tableBody.appendChild(tr);
+    });
+  }
+
+
+  //- sortByPopulation();
+
+  sortOrderSelect.addEventListener('change', function() {
+    sortByPopulation();
+  });
